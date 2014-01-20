@@ -1,7 +1,7 @@
 docker-growthforecast
 =====================
 
-Dockfile of growthforecast.
+Dockerfile of growthforecast.
 
 LICENSE
 -------
