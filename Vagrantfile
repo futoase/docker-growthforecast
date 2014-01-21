@@ -104,9 +104,9 @@ Vagrant.configure("2") do |config|
 
   config.vm.network :private_network, ip: "192.168.33.100"
 
-  #config.vm.provision "docker" do |d|
-  #  d.pull_images "futoase/hrforecast"
-  #  d.run "futoase/hrforecast",
-  #    args: "-p 80:80"
-  #end
+  config.vm.provision "docker" do |d|
+    d.pull_images "futoase/docker-growthforecast"
+    d.run "futoase/docker-growthforecast",
+      args: "-p 80:80"
+  end
 end
