@@ -30,9 +30,9 @@ RUN source /opt/perlbrew/etc/bashrc && perlbrew install perl-5.18.2
 RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && perlbrew install-cpanm
 
 # setup mysql
-RUN chkconfig --level 2345 mysqld on
-RUN service mysqld start && mysqladmin -h localhost -u root create growthforecast
-RUN service mysqld start && mysql -u root -e "GRANT CREATE, ALTER, DELETE, INSERT, UPDATE, SELECT ON growthforecast.* TO 'growthforecast'@'localhost' IDENTIFIED BY 'growthforecast';"
+ADD ./mysqld-setup.sh /root/mysqld-setup.sh
+RUN chmod +x /root/mysqld-setup.sh
+RUN /root/mysqld-setup.sh
 
 # setup nginx
 ADD ./template/nginx.conf /etc/nginx/conf.d/growthforecast.conf

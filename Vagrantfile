@@ -6,6 +6,7 @@ BOX_URI = ENV['BOX_URI'] || "http://files.vagrantup.com/precise64.box"
 VF_BOX_URI = ENV['BOX_URI'] || "http://files.vagrantup.com/precise64_vmware_fusion.box"
 
 SSH_PRIVKEY_PATH = ENV["SSH_PRIVKEY_PATH"]
+PULL_DOCKER = ENV["PULL_DOCKER"]
 
 # A script to upgrade from the 12.04 kernel to the raring backport kernel (3.8)
 # and install docker.
@@ -104,9 +105,12 @@ Vagrant.configure("2") do |config|
 
   config.vm.network :private_network, ip: "192.168.33.100"
 
-  config.vm.provision "docker" do |d|
-    d.pull_images "futoase/docker-growthforecast"
-    d.run "futoase/docker-growthforecast",
-      args: "-p 80:80"
+  if !PULL_DOCKER.nil?
+    config.vm.provision "docker" do |d|
+      d.pull_images "futoase/docker-growthforecast"
+      d.run "futoase/docker-growthforecast",
+        args: "-p 80:80"
+    end
   end
+
 end
