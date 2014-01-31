@@ -24,6 +24,9 @@ RUN yum -y install --enablerepo=epel,remi mysql mysql-server mysql-devel
 # install nginx
 RUN yum -y install --enablerepo=nginx nginx
 
+# install supervisor
+RUN yum -y install --enablerepo=epel,remi supervisor
+
 # setup perlbrew
 RUN export PERLBREW_ROOT=/opt/perlbrew && curl -L http://install.perlbrew.pl | bash
 RUN source /opt/perlbrew/etc/bashrc && perlbrew install perl-5.18.2
@@ -44,6 +47,12 @@ RUN service nginx restart
 RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && cpanm -n GrowthForecast
 RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && cpanm -n DBD::mysql
 RUN mkdir -p /root/GrowthForecast
+
+# setup supervisor
+RUN sed -i -e "s/nodaemon=false/nodaemon=true/g" /etc/supervisord.conf
+ADD ./template/supervisor.conf /tmp/growthforecast.conf
+RUN cat /tmp/growthforecast.conf >> /etc/supervisord.conf
+RUN rm /tmp/growthforecast.conf
 
 # startup
 ENV PATH /opt/perlbrew/perls/perl-5.18.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
