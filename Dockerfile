@@ -1,10 +1,6 @@
-FROM centos
+FROM futoase/docker-centos-base:tokyo
 
 MAINTAINER Keiji Matsuzaki <futoase@gmail.com>
-
-# setup network
-# reference from https://github.com/dotcloud/docker/issues/1240#issuecomment-21807183
-RUN echo "NETWORKING=yes" > /etc/sysconfig/network
 
 # setup remi repository
 RUN wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
