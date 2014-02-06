@@ -2,6 +2,7 @@
 
 service nginx start
 service mysqld start
+service ntpd start
 
 if [ ! -d /var/lib/mysql/growthforecast ]; then
   /root/mysqld-setup.sh
