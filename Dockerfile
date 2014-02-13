@@ -23,15 +23,19 @@ RUN yum -y install --enablerepo=nginx nginx
 # install supervisor
 RUN yum -y install --enablerepo=epel,remi supervisor
 
+# create growthforecast user
+RUN useradd -m growthforecast
+RUN mkdir -p /home/growthforecast/scripts
+
 # setup perlbrew
 RUN export PERLBREW_ROOT=/opt/perlbrew && curl -L http://install.perlbrew.pl | bash
 RUN source /opt/perlbrew/etc/bashrc && perlbrew install perl-5.18.2
 RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && perlbrew install-cpanm
 
 # setup mysql
-ADD ./mysqld-setup.sh /root/mysqld-setup.sh
-RUN chmod +x /root/mysqld-setup.sh
-RUN /root/mysqld-setup.sh
+ADD ./scripts/mysqld-setup.sh /home/growthforecast/scripts/mysqld-setup.sh
+RUN chmod +x /home/growthforecast/scripts/mysqld-setup.sh
+RUN /home/growthforecast/scripts/mysqld-setup.sh
 
 # setup nginx
 ADD ./template/nginx.conf /etc/nginx/conf.d/growthforecast.conf
@@ -42,7 +46,7 @@ RUN service nginx restart
 # install growthforecast
 RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && cpanm -n GrowthForecast
 RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && cpanm -n DBD::mysql
-RUN mkdir -p /root/GrowthForecast
+RUN mkdir -p /home/growthforecast/GrowthForecast
 
 # setup supervisor
 RUN sed -i -e "s/nodaemon=false/nodaemon=true/g" /etc/supervisord.conf
@@ -56,8 +60,8 @@ ENV PATH /opt/perlbrew/perls/perl-5.18.2/bin:/usr/local/sbin:/usr/local/bin:/usr
 ENV MYSQL_USER growthforecast
 ENV MYSQL_PASSWORD growthforecast
 
-ADD ./startup.sh /root/startup.sh
-RUN chmod +x /root/startup.sh
+ADD ./startup.sh /home/growthforecast/scripts/startup.sh
+RUN chmod +x /home/growthforecast/scripts/startup.sh
 
 EXPOSE 80
-CMD ["/root/startup.sh"]
+CMD ["/home/growthforecast/scripts/startup.sh"]
