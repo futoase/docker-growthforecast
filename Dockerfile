@@ -25,7 +25,8 @@ RUN yum -y install --enablerepo=epel,remi supervisor
 
 # create growthforecast user
 RUN useradd -m growthforecast
-RUN mkdir -p /home/growthforecast/scripts
+RUN mkdir -p /home/growthforecast/scripts && chown growthforecast:growthforecast /home/growthforecast/scripts
+RUN mkdir -p /home/growthforecast/data && chown growthforecast:growthforecast /home/growthforecast/data
 
 # setup perlbrew
 RUN export PERLBREW_ROOT=/opt/perlbrew && curl -L http://install.perlbrew.pl | bash
@@ -46,7 +47,6 @@ RUN service nginx restart
 # install growthforecast
 RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && cpanm -n GrowthForecast
 RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && cpanm -n DBD::mysql
-RUN mkdir -p /home/growthforecast/GrowthForecast
 
 # setup supervisor
 RUN sed -i -e "s/nodaemon=false/nodaemon=true/g" /etc/supervisord.conf
@@ -57,10 +57,11 @@ RUN rm /tmp/growthforecast.conf
 # startup
 ENV PATH /opt/perlbrew/perls/perl-5.18.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
+# setup for mysql connection environment variable.
 ENV MYSQL_USER growthforecast
 ENV MYSQL_PASSWORD growthforecast
 
-ADD ./startup.sh /home/growthforecast/scripts/startup.sh
+ADD ./scripts/startup.sh /home/growthforecast/scripts/startup.sh
 RUN chmod +x /home/growthforecast/scripts/startup.sh
 
 EXPOSE 80
