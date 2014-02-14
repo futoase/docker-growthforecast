@@ -11,6 +11,17 @@ How to using?
 > open http://192.168.33.100/
 ```
 
+If you should be development will setting DEV_MODE to environment variable.
+
+```
+> export DEV_MODE=1
+> vagrant up --provision
+> vagrant ssh
+> cd /vagrant
+> docker build .
+```
+
+
 LICENSE
 -------
 
