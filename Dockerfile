@@ -1,12 +1,18 @@
-FROM futoase/docker-centos-base:utc
+FROM centos
 
 MAINTAINER Keiji Matsuzaki <futoase@gmail.com>
+
+# setup network
+# reference from https://github.com/dotcloud/docker/issues/1240#issuecomment-21807183
+RUN echo "NETWORKING=yes" > /etc/sysconfig/network
 
 # setup remi repository
 RUN wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 RUN wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
 RUN curl -O http://rpms.famillecollet.com/RPM-GPG-KEY-remi; rpm --import RPM-GPG-KEY-remi
 RUN rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm
+RUN yum -y update
+RUN yum -y upgrade
 
 # setup nginx repository
 ADD ./template/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -61,6 +67,8 @@ ENV PATH /opt/perlbrew/perls/perl-5.18.2/bin:/usr/local/sbin:/usr/local/bin:/usr
 ENV MYSQL_USER growthforecast
 ENV MYSQL_PASSWORD growthforecast
 
+ADD ./scripts/timezone.sh /home/growthforecast/scripts/timezone.sh
+RUN chmod +x /home/growthforecast/scripts/timezone.sh
 ADD ./scripts/startup.sh /home/growthforecast/scripts/startup.sh
 RUN chmod +x /home/growthforecast/scripts/startup.sh
 
