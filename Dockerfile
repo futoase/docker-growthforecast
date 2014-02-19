@@ -29,15 +29,22 @@ RUN yum -y install --enablerepo=nginx nginx
 # install supervisor
 RUN yum -y install --enablerepo=epel,remi supervisor
 
-# create growthforecast user
-RUN useradd -m growthforecast
-RUN mkdir -p /home/growthforecast/scripts && chown growthforecast:growthforecast /home/growthforecast/scripts
-RUN mkdir -p /home/growthforecast/data && chown growthforecast:growthforecast /home/growthforecast/data
-
 # setup perlbrew
 RUN export PERLBREW_ROOT=/opt/perlbrew && curl -L http://install.perlbrew.pl | bash
 RUN source /opt/perlbrew/etc/bashrc && perlbrew install perl-5.18.2
 RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && perlbrew install-cpanm
+
+# create growthforecast user
+RUN useradd -m growthforecast
+
+# create directories
+RUN mkdir -p /home/growthforecast/scripts && chown growthforecast:growthforecast /home/growthforecast/scripts
+RUN mkdir -p /home/growthforecast/data && chown growthforecast:growthforecast /home/growthforecast/data
+
+RUN git clone https://github.com/kazeburo/GrowthForecast.git /home/growthforecast/GrowthForecast.git
+RUN mkdir -p /var/nginx/GRF && chown nginx:nginx /var/nginx/GRF
+RUN cp -aR /home/growthforecast/GrowthForecast.git/public /var/nginx/GRF
+RUN chown -R nginx:nginx /var/nginx/GRF/public
 
 # setup mysql
 ADD ./scripts/mysqld-setup.sh /home/growthforecast/scripts/mysqld-setup.sh
