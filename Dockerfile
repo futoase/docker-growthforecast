@@ -14,6 +14,11 @@ RUN rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm
 RUN yum -y update
 RUN yum -y upgrade
 
+# install sshd, passwd
+RUN yum -y install openssh-server passwd
+# Change UsePAM yes to no
+RUN sed -i -e 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
+
 # setup nginx repository
 ADD ./template/nginx.repo /etc/yum.repos.d/nginx.repo
 
@@ -36,6 +41,7 @@ RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && perlbrew inst
 
 # create growthforecast user
 RUN useradd -m growthforecast
+RUN echo "growthforecast" | passwd --stdin growthforecast
 
 # create directories
 RUN mkdir -p /home/growthforecast/scripts && chown growthforecast:growthforecast /home/growthforecast/scripts
@@ -79,5 +85,5 @@ RUN chmod +x /home/growthforecast/scripts/timezone.sh
 ADD ./scripts/startup.sh /home/growthforecast/scripts/startup.sh
 RUN chmod +x /home/growthforecast/scripts/startup.sh
 
-EXPOSE 80
+EXPOSE 22 80
 CMD ["/home/growthforecast/scripts/startup.sh"]
