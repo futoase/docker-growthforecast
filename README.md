@@ -24,7 +24,7 @@ If you need save datum of growthforecast on docker host, must be add option volu
 - set timezone for the tokyo
 
 ```
-> vagrant run -p 80:80 -i -t -e TIME_ZONE=tokyo futoase/growthforecast /bin/bash
+> docker run -p 80:80 -i -t -e TIME_ZONE=tokyo futoase/growthforecast /bin/bash
 # date
 # Mon Feb 17 18:12:04 JST 2014
 ```
